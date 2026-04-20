@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Donjons de Tamkaer — Projet POO Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1410;
+    --parchment:#f4ead5;
+    --parchment-deep:#e8d9b5;
+    --blood:#8b1e1e;
+    --gold:#a07828;
+    --gold-bright:#c8973a;
+    --shadow:#2d1f15;
+    --ember:#d2691e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Crimson Pro', Georgia, serif;
+    background:var(--parchment);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(160,120,40,0.12), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(139,30,30,0.08), transparent 60%),
+      repeating-linear-gradient(45deg, transparent 0 2px, rgba(45,31,21,0.015) 2px 4px);
+    color:var(--ink);
+    line-height:1.65;
+    font-size:17px;
+    min-height:100vh;
+  }
+  .page{
+    max-width:980px;
+    margin:0 auto;
+    padding:60px 50px 80px;
+    position:relative;
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    inset:20px;
+    border:1px double var(--gold);
+    pointer-events:none;
+    opacity:.35;
+  }
+
+  /* HEADER */
+  header{
+    text-align:center;
+    padding:50px 20px 60px;
+    position:relative;
+    border-bottom:3px double var(--shadow);
+    margin-bottom:50px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.3em;
+    color:var(--blood);
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  h1{
+    font-family:'Cinzel', serif;
+    font-weight:900;
+    font-size:clamp(38px, 6vw, 68px);
+    letter-spacing:0.04em;
+    line-height:1.05;
+    color:var(--shadow);
+    text-shadow:2px 2px 0 rgba(160,120,40,0.3);
+    margin-bottom:18px;
+  }
+  h1 .amp{color:var(--blood);font-style:italic;font-weight:400}
+  .subtitle{
+    font-style:italic;
+    font-size:19px;
+    color:var(--shadow);
+    max-width:600px;
+    margin:0 auto 30px;
+    opacity:.85;
+  }
+  .meta-row{
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--shadow);
+  }
+  .meta-row span strong{color:var(--blood);font-weight:600}
+
+  .ornament{
+    text-align:center;
+    font-family:'Cinzel', serif;
+    color:var(--gold);
+    font-size:24px;
+    letter-spacing:1em;
+    margin:40px 0;
+    opacity:.6;
+  }
+
+  /* SECTIONS */
+  section{margin-bottom:55px}
+  h2{
+    font-family:'Cinzel', serif;
+    font-size:28px;
+    font-weight:600;
+    color:var(--shadow);
+    padding-bottom:12px;
+    margin-bottom:25px;
+    border-bottom:1px solid var(--gold);
+    position:relative;
+  }
+  h2::before{
+    content:"❖";
+    color:var(--blood);
+    margin-right:15px;
+    font-size:18px;
+  }
+  h3{
+    font-family:'Cinzel', serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--blood);
+    margin:30px 0 12px;
+    letter-spacing:0.02em;
+  }
+  p{margin-bottom:14px}
+  strong{color:var(--shadow);font-weight:600}
+  em{color:var(--blood)}
+
+  /* CONTEXTE */
+  .lore{
+    background:linear-gradient(to right, rgba(160,120,40,0.08), transparent 70%);
+    border-left:4px solid var(--blood);
+    padding:25px 30px;
+    font-style:italic;
+    font-size:18px;
+    position:relative;
+  }
+  .lore::before{
+    content:"❝";
+    position:absolute;
+    top:-10px;
+    left:15px;
+    font-size:60px;
+    color:var(--gold);
+    font-family:'Cinzel', serif;
+    line-height:1;
+  }
+
+  /* LISTES */
+  ul, ol{padding-left:28px;margin-bottom:16px}
+  ul li, ol li{margin-bottom:8px}
+  ul li::marker{color:var(--blood);content:"◆ "}
+
+  /* OBJECTIFS */
+  .objectifs{
+    background:var(--parchment-deep);
+    padding:28px 35px;
+    border:1px solid var(--gold);
+    border-radius:2px;
+    box-shadow:4px 4px 0 rgba(45,31,21,0.15);
+  }
+  .objectifs ul{list-style:none;padding:0}
+  .objectifs li{
+    padding:6px 0 6px 30px;
+    position:relative;
+    border-bottom:1px dotted rgba(45,31,21,0.2);
+  }
+  .objectifs li:last-child{border:none}
+  .objectifs li::before{
+    content:"⚔";
+    position:absolute;
+    left:0;
+    color:var(--blood);
+    font-size:16px;
+  }
+
+  /* SPECS / CARDS */
+  .spec-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+    gap:20px;
+    margin-top:20px;
+  }
+  .spec-card{
+    background:rgba(244,234,213,0.6);
+    border:1px solid rgba(45,31,21,0.2);
+    padding:22px 25px;
+    border-radius:2px;
+    position:relative;
+  }
+  .spec-card::before{
+    content:"";
+    position:absolute;
+    top:-1px;left:-1px;right:-1px;
+    height:3px;
+    background:linear-gradient(90deg, var(--blood), var(--gold), var(--blood));
+  }
+  .spec-card h3{margin-top:0;font-size:17px}
+  .spec-card ul{padding-left:20px;margin-bottom:0}
+
+  /* CODE BLOCK */
+  .arborescence{
+    background:var(--shadow);
+    color:var(--parchment);
+    padding:25px 30px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    line-height:1.75;
+    border-left:4px solid var(--gold);
+    overflow-x:auto;
+    white-space:pre;
+  }
+  .arborescence .comment{color:var(--gold-bright);font-style:italic}
+
+  /* PLANNING */
+  .planning{display:flex;flex-direction:column;gap:18px}
+  .semaine{
+    display:grid;
+    grid-template-columns:140px 1fr;
+    gap:25px;
+    padding:20px 25px;
+    background:rgba(232,217,181,0.5);
+    border-left:5px solid var(--blood);
+    align-items:start;
+  }
+  .semaine:nth-child(2){border-color:var(--gold)}
+  .semaine:nth-child(3){border-color:var(--ember)}
+  .semaine:nth-child(4){border-color:var(--shadow)}
+  .semaine-label{
+    font-family:'Cinzel', serif;
+    font-weight:600;
+  }
+  .semaine-label .num{
+    display:block;
+    font-size:36px;
+    color:var(--blood);
+    line-height:1;
+  }
+  .semaine-label .heures{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.15em;
+    color:var(--shadow);
+    opacity:.7;
+    margin-top:6px;
+  }
+  .semaine h3{margin-top:0;margin-bottom:8px}
+
+  /* TABLE BARÈME */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:15px;
+    background:rgba(244,234,213,0.5);
+    box-shadow:3px 3px 0 rgba(45,31,21,0.15);
+  }
+  th{
+    background:var(--shadow);
+    color:var(--parchment);
+    padding:14px 20px;
+    text-align:left;
+    font-family:'Cinzel', serif;
+    font-weight:600;
+    font-size:14px;
+    letter-spacing:0.05em;
+  }
+  th:last-child{text-align:right}
+  td{
+    padding:13px 20px;
+    border-bottom:1px solid rgba(45,31,21,0.15);
+  }
+  td:last-child{
+    text-align:right;
+    font-family:'JetBrains Mono', monospace;
+    font-weight:600;
+    color:var(--blood);
+  }
+  tr:last-child td{border-bottom:none}
+  tr.total td{
+    background:var(--parchment-deep);
+    font-weight:600;
+    font-family:'Cinzel', serif;
+  }
+
+  /* LIVRABLES */
+  .livrables{counter-reset:liv}
+  .livrables li{
+    list-style:none;
+    padding:14px 20px 14px 60px;
+    position:relative;
+    background:rgba(244,234,213,0.5);
+    margin-bottom:10px;
+    border-left:3px solid var(--gold);
+  }
+  .livrables li::before{
+    counter-increment:liv;
+    content:counter(liv, upper-roman);
+    position:absolute;
+    left:15px;
+    top:50%;
+    transform:translateY(-50%);
+    font-family:'Cinzel', serif;
+    font-weight:900;
+    font-size:22px;
+    color:var(--blood);
+    width:30px;
+  }
+  .livrables ul{list-style:none;padding:0;margin:0}
+
+  /* BONUS */
+  .bonus{
+    background:linear-gradient(135deg, rgba(200,151,58,0.15), rgba(210,105,30,0.1));
+    border:1px dashed var(--gold);
+    padding:25px 30px;
+    position:relative;
+  }
+  .bonus::before{
+    content:"✦";
+    position:absolute;
+    top:-15px;
+    left:25px;
+    background:var(--parchment);
+    padding:0 10px;
+    color:var(--blood);
+    font-size:24px;
+  }
+  .bonus ul{list-style:none;padding:0}
+  .bonus li{
+    padding:6px 0 6px 25px;
+    position:relative;
+  }
+  .bonus li::before{
+    content:"+";
+    position:absolute;
+    left:0;
+    color:var(--blood);
+    font-weight:900;
+    font-family:'Cinzel', serif;
+  }
+
+  /* CLASSES HEROS */
+  .classes{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:15px;
+    margin:20px 0;
+  }
+  .classe{
+    text-align:center;
+    padding:20px 15px;
+    background:var(--parchment-deep);
+    border-top:3px solid var(--blood);
+  }
+  .classe .nom{
+    font-family:'Cinzel', serif;
+    font-size:16px;
+    font-weight:600;
+    color:var(--shadow);
+    margin-bottom:6px;
+    letter-spacing:0.08em;
+  }
+  .classe .desc{font-size:14px;opacity:.85}
+
+  /* FOOTER */
+  footer{
+    text-align:center;
+    margin-top:70px;
+    padding-top:30px;
+    border-top:3px double var(--shadow);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--shadow);
+    opacity:.7;
+  }
+
+  /* CODE COMPARISON */
+  .code-intro{
+    background:rgba(139,30,30,0.06);
+    border-left:4px solid var(--blood);
+    padding:20px 25px;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin:25px 0 35px;
+  }
+  .code-block{
+    background:var(--shadow);
+    border-radius:3px;
+    overflow:hidden;
+    box-shadow:3px 3px 0 rgba(45,31,21,0.2);
+  }
+  .code-block .label{
+    background:rgba(255,255,255,0.08);
+    color:var(--gold-bright);
+    padding:8px 16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(200,151,58,0.3);
+  }
+  .code-block pre{
+    color:var(--parchment);
+    padding:18px 22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    line-height:1.65;
+    overflow-x:auto;
+    white-space:pre;
+    margin:0;
+  }
+  .code-block .kw{color:#e8a23d}
+  .code-block .typ{color:#4fc3a1}
+  .code-block .str{color:#d28e8e}
+  .code-block .com{color:#8a7a6a;font-style:italic}
+  .code-block .num{color:#c8973a}
+
+  .java-notes{
+    background:var(--parchment-deep);
+    border:1px solid var(--gold);
+    padding:22px 28px;
+    margin-top:25px;
+  }
+  .java-notes h3{margin-top:0}
+  .java-notes ul{list-style:none;padding:0}
+  .java-notes li{
+    padding:8px 0 8px 28px;
+    position:relative;
+    border-bottom:1px dotted rgba(45,31,21,0.15);
+  }
+  .java-notes li:last-child{border:none}
+  .java-notes li::before{
+    content:"→";
+    position:absolute;
+    left:0;
+    color:var(--blood);
+    font-weight:900;
+  }
+  .java-notes code{
+    font-family:'JetBrains Mono', monospace;
+    background:var(--shadow);
+    color:var(--parchment);
+    padding:2px 8px;
+    border-radius:2px;
+    font-size:13px;
+  }
+
+  @media (max-width:700px){
+    .compare{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:white}
+    .page::before{display:none}
+    section{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Donjons <span class="amp">de</span> Tamkaer</h1>
+  <p class="subtitle">Un mini-RPG console en Java pour éprouver les fondamentaux de la Programmation Orientée Objet</p>
+  <div class="meta-row">
+    <span>Durée : <strong>3 semaines</strong></span>
+    <span>Langage : <strong>Java 17+</strong></span>
+    <span>Mode : <strong>travail en soirée</strong></span>
+  </div>
+</header>
+
+<div class="ornament">✦ ❖ ✦</div>
+
+<section>
+  <h2>Contexte narratif</h2>
+  <div class="lore">
+    Le héros franchit les portes scellées du donjon de Tamkaer. Cinq étages le séparent du Seigneur Noir qui détient l'Amulette ancestrale. À chaque palier, des créatures hostiles, des coffres oubliés, parfois un marchand égaré. Pas de monde ouvert, pas de quêtes tortueuses : un donjon linéaire, mais une architecture logicielle exigeante.
+  </div>
+</section>
+
+<section>
+  <h2>Objectifs pédagogiques</h2>
+  <div class="objectifs">
+    <p style="margin-bottom:15px">Le projet doit démontrer la maîtrise de :</p>
+    <ul>
+      <li>Les <strong>4 piliers de la POO</strong> : encapsulation, héritage, polymorphisme, abstraction</li>
+      <li><strong>Classes abstraites et interfaces</strong> (au moins une de chaque)</li>
+      <li><strong>2 design patterns</strong> au choix parmi : Singleton, Factory, Observer, Strategy, Decorator</li>
+      <li><strong>3 principes SOLID</strong> minimum, justifiés dans le rapport</li>
+      <li><strong>Exceptions personnalisées</strong> (au moins 2)</li>
+    </ul>
+  </div>
+</section>
+
+<div class="ornament">✦</div>
+
+<section>
+  <h2>Spécifications fonctionnelles</h2>
+
+  <h3>I · Personnages</h3>
+  <p>Classe abstraite <strong>Personnage</strong> avec : nom, PV, PV max, attaque, défense, niveau.</p>
+  <p><strong>Le héros</strong> (classe <em>Heros</em>) permet au joueur de choisir parmi trois classes — idéal pour appliquer le pattern <em>Strategy</em> :</p>
+  <div class="classes">
+    <div class="classe">
+      <div class="nom">Guerrier</div>
+      <div class="desc">Beaucoup de PV, attaque moyenne, résistant aux coups</div>
+    </div>
+    <div class="classe">
+      <div class="nom">Mage</div>
+      <div class="desc">Peu de PV, grosse attaque, sort spécial dévastateur</div>
+    </div>
+    <div class="classe">
+      <div class="nom">Voleur</div>
+      <div class="desc">PV moyens, chance élevée de coups critiques</div>
+    </div>
+  </div>
+  <p><strong>Les ennemis</strong> : classe abstraite <strong>Ennemi</strong> avec 4 sous-classes — <em>Gobelin</em>, <em>Squelette</em>, <em>Troll</em>, <em>BossFinal</em>.</p>
+
+  <h3>II · Système de combat au tour par tour</h3>
+  <ul>
+    <li>Actions disponibles : Attaquer, Utiliser potion, Compétence spéciale, Fuir</li>
+    <li>Formule de dégâts : <code style="font-family:'JetBrains Mono',monospace;background:var(--shadow);color:var(--parchment);padding:2px 8px;border-radius:2px;font-size:14px">max(1, attaque - défense + aléa(-2, +2))</code></li>
+    <li>Coups critiques (dégâts ×2) avec probabilité variable selon la classe</li>
+    <li>Gain d'XP à la victoire, montée de niveau avec amélioration des stats</li>
+    <li>Affichage console lisible avec barres de PV en ASCII</li>
+  </ul>
+
+  <h3>III · Inventaire et objets</h3>
+  <p>Interface <strong>Objet</strong> avec trois implémentations :</p>
+  <div class="spec-grid">
+    <div class="spec-card">
+      <h3>Arme</h3>
+      <ul><li>Bonus d'attaque</li><li>Nom, valeur</li></ul>
+    </div>
+    <div class="spec-card">
+      <h3>Armure</h3>
+      <ul><li>Bonus de défense</li><li>Nom, valeur</li></ul>
+    </div>
+    <div class="spec-card">
+      <h3>Potion</h3>
+      <ul><li>Soigne les PV</li><li>Usage consommable</li></ul>
+    </div>
+  </div>
+  <p style="margin-top:18px">Inventaire limité à <strong>10 slots</strong>. Le héros dispose de <strong>2 slots d'équipement</strong> : arme et armure.</p>
+
+  <h3>IV · Le donjon et son déroulé</h3>
+  <p>Le donjon comporte <strong>5 étages</strong>. La difficulté et les récompenses augmentent à chaque palier. Le héros ne traverse pas l'étage d'un trait : après chaque combat, il prend une décision.</p>
+
+  <div class="spec-card" style="margin:20px 0;border-left:4px solid var(--blood)">
+    <h3 style="margin-top:0">Boucle de jeu à chaque étage</h3>
+    <ol style="padding-left:22px;margin-bottom:0">
+      <li style="margin-bottom:10px"><strong>Un combat</strong> contre un ennemi généré par la <em>Factory</em> selon l'étage courant.</li>
+      <li style="margin-bottom:10px"><strong>Après la victoire</strong>, le héros gagne de l'or, de l'XP et parfois un objet. Il doit alors choisir :
+        <ul style="margin-top:8px">
+          <li>⚔ <strong>Rester à cet étage</strong> et relancer un nouveau combat (farming : plus d'or et d'XP, mais risque de mourir)</li>
+          <li>⇧ <strong>Monter à l'étage suivant</strong> (progression vers le boss)</li>
+        </ul>
+      </li>
+      <li><strong>Si l'étage dispose d'un marchand</strong> (étages 2 et 4), une seconde question s'affiche avant de relancer un combat ou de monter :
+        <ul style="margin-top:8px">
+          <li>💰 <strong>Aller chez le marchand</strong> pour dépenser l'or gagné (potions, armes, armures)</li>
+          <li>➜ <strong>Passer directement</strong> au choix suivant sans acheter</li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <p>À tout moment, le héros peut consulter son inventaire et son équipement. Le <strong>BossFinal</strong> se trouve au 5ᵉ étage : le vaincre clôt la partie.</p>
+  <p>Utiliser le pattern <em>Factory</em> pour générer ennemis et objets selon l'étage : plus on descend, plus la difficulté et les récompenses augmentent.</p>
+
+  <h3>V · Économie simple</h3>
+  <p>Pièces d'or gagnées en combat et dans les coffres. Les marchands vendent potions, armes et armures à prix fixes.</p>
+
+  <h3>VI · Système d'événements — Observer (optionnel)</h3>
+  <p>Si choisi comme second pattern : un <strong>JournalDeBord</strong> observe les événements du jeu (combat gagné, montée de niveau, objet trouvé) et les affiche dans un log consultable par le joueur à tout moment.</p>
+</section>
+
+<div class="ornament">✦ ❖ ✦</div>
+
+<section>
+  <h2>Architecture imposée</h2>
+  <div class="arborescence">src/main/java/com/tamkaer/
+├── Main.java
+├── personnages/    <span class="comment">// Personnage, Heros, classes, ennemis</span>
+├── combat/         <span class="comment">// SystemeCombat</span>
+├── objets/         <span class="comment">// Objet, Arme, Armure, Potion</span>
+├── inventaire/     <span class="comment">// Inventaire</span>
+├── donjon/         <span class="comment">// Donjon, Etage</span>
+├── factories/      <span class="comment">// EnnemiFactory, ObjetFactory</span>
+├── exceptions/     <span class="comment">// exceptions personnalisées</span>
+└── console/        <span class="comment">// Menu, Affichage, LecteurSaisie (tout le I/O terminal)</span></div>
+</section>
+
+<section>
+  <h2>Planning suggéré</h2>
+  <div class="planning">
+    <div class="semaine">
+      <div class="semaine-label">
+        <span class="num">I</span>
+        Semaine
+        <div class="heures">≈ 10 h</div>
+      </div>
+      <div>
+        <h3>Fondations</h3>
+        <ul>
+          <li>Setup Maven + Git, structure du projet</li>
+          <li>Classe <em>Personnage</em>, <em>Heros</em>, les 3 classes de héros (Strategy)</li>
+          <li>Classe <em>Ennemi</em> et deux sous-classes</li>
+          <li>Combat basique fonctionnel : héros contre gobelin</li>
+        </ul>
+      </div>
+    </div>
+    <div class="semaine">
+      <div class="semaine-label">
+        <span class="num">II</span>
+        Semaine
+        <div class="heures">≈ 12 h</div>
+      </div>
+      <div>
+        <h3>Objets et inventaire</h3>
+        <ul>
+          <li>Interface <em>Objet</em>, armes, armures, potions</li>
+          <li>Inventaire et équipement du héros</li>
+          <li>Factory pour objets et ennemis</li>
+          <li>Deux ennemis supplémentaires</li>
+        </ul>
+      </div>
+    </div>
+    <div class="semaine">
+      <div class="semaine-label">
+        <span class="num">III</span>
+        Semaine
+        <div class="heures">≈ 12 h</div>
+      </div>
+      <div>
+        <h3>Donjon, économie et finition</h3>
+        <ul>
+          <li>Génération des 5 étages</li>
+          <li>Marchands et système économique</li>
+          <li>Coffres et récompenses</li>
+          <li>Montée de niveau, boss final</li>
+          <li>Exceptions personnalisées, équilibrage</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Livrables</h2>
+  <ol class="livrables">
+    <li><strong>Code source</strong> hébergé sur un dépôt Git, avec des commits réguliers et des messages clairs</li>
+    <li><strong>Rapport PDF court (5 à 7 pages)</strong> contenant un diagramme de classes simplifié, les patterns choisis et justifiés, les 3 principes SOLID avec extraits de code</li>
+    <li><strong>Fichier README.md</strong> avec instructions de compilation et d'exécution</li>
+    <li><strong>Démo live</strong> en soutenance : 10 minutes de présentation + 5 minutes de questions</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Pistes bonus</h2>
+  <div class="bonus">
+    <p style="margin-bottom:12px"><strong>Jusqu'à +2 points</strong> pour les équipes qui vont plus loin :</p>
+    <ul>
+      <li>Un troisième design pattern bien intégré</li>
+      <li>Système de sauvegarde et chargement en JSON</li>
+      <li>Un quatrième type d'ennemi avec un comportement original</li>
+      <li>Pattern Decorator sur les armes (enchantements : feu, glace, foudre…)</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Yassine El Azzati · Bachelor 1 · Unité 2 · 1POO3 · Année académique 2025-2026
+</footer>
+
+</div>
+</body>
+</html>

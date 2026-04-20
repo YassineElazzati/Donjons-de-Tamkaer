@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide de survie Java — Donjons de Tamkaer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1410;
+    --parchment:#f4ead5;
+    --parchment-deep:#e8d9b5;
+    --blood:#8b1e1e;
+    --gold:#a07828;
+    --gold-bright:#c8973a;
+    --shadow:#2d1f15;
+    --ember:#d2691e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Crimson Pro', Georgia, serif;
+    background:var(--parchment);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(160,120,40,0.12), transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(139,30,30,0.08), transparent 60%),
+      repeating-linear-gradient(45deg, transparent 0 2px, rgba(45,31,21,0.015) 2px 4px);
+    color:var(--ink);
+    line-height:1.65;
+    font-size:17px;
+    min-height:100vh;
+  }
+  .page{
+    max-width:980px;
+    margin:0 auto;
+    padding:60px 50px 80px;
+    position:relative;
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    inset:20px;
+    border:1px double var(--gold);
+    pointer-events:none;
+    opacity:.35;
+  }
+
+  header{
+    text-align:center;
+    padding:50px 20px 60px;
+    position:relative;
+    border-bottom:3px double var(--shadow);
+    margin-bottom:50px;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.3em;
+    color:var(--blood);
+    text-transform:uppercase;
+    margin-bottom:20px;
+  }
+  h1{
+    font-family:'Cinzel', serif;
+    font-weight:900;
+    font-size:clamp(38px, 6vw, 60px);
+    letter-spacing:0.04em;
+    line-height:1.05;
+    color:var(--shadow);
+    text-shadow:2px 2px 0 rgba(160,120,40,0.3);
+    margin-bottom:18px;
+  }
+  h1 .amp{color:var(--blood);font-style:italic;font-weight:400}
+  .subtitle{
+    font-style:italic;
+    font-size:19px;
+    color:var(--shadow);
+    max-width:640px;
+    margin:0 auto;
+    opacity:.85;
+  }
+
+  .ornament{
+    text-align:center;
+    font-family:'Cinzel', serif;
+    color:var(--gold);
+    font-size:24px;
+    letter-spacing:1em;
+    margin:40px 0;
+    opacity:.6;
+  }
+
+  section{margin-bottom:45px}
+  h2{
+    font-family:'Cinzel', serif;
+    font-size:26px;
+    font-weight:600;
+    color:var(--shadow);
+    padding-bottom:12px;
+    margin-bottom:20px;
+    border-bottom:1px solid var(--gold);
+  }
+  h2::before{
+    content:"❖";
+    color:var(--blood);
+    margin-right:15px;
+    font-size:18px;
+  }
+  h3{
+    font-family:'Cinzel', serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--blood);
+    margin:30px 0 12px;
+    letter-spacing:0.02em;
+  }
+  p{margin-bottom:14px}
+  strong{color:var(--shadow);font-weight:600}
+  em{color:var(--blood)}
+
+  .code-intro{
+    background:rgba(139,30,30,0.06);
+    border-left:4px solid var(--blood);
+    padding:20px 25px;
+    margin-bottom:30px;
+    font-style:italic;
+  }
+  .compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin:25px 0 35px;
+  }
+  .code-block{
+    background:var(--shadow);
+    border-radius:3px;
+    overflow:hidden;
+    box-shadow:3px 3px 0 rgba(45,31,21,0.2);
+  }
+  .code-block .label{
+    background:rgba(255,255,255,0.08);
+    color:var(--gold-bright);
+    padding:8px 16px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    border-bottom:1px solid rgba(200,151,58,0.3);
+  }
+  .code-block pre{
+    color:var(--parchment);
+    padding:18px 22px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:13px;
+    line-height:1.65;
+    overflow-x:auto;
+    white-space:pre;
+    margin:0;
+  }
+  .code-block .kw{color:#e8a23d}
+  .code-block .typ{color:#4fc3a1}
+  .code-block .str{color:#d28e8e}
+  .code-block .com{color:#8a7a6a;font-style:italic}
+  .code-block .num{color:#c8973a}
+
+  .java-notes{
+    background:var(--parchment-deep);
+    border:1px solid var(--gold);
+    padding:22px 28px;
+    margin-top:25px;
+  }
+  .java-notes h3{margin-top:0}
+  .java-notes ul{list-style:none;padding:0}
+  .java-notes li{
+    padding:8px 0 8px 28px;
+    position:relative;
+    border-bottom:1px dotted rgba(45,31,21,0.15);
+  }
+  .java-notes li:last-child{border:none}
+  .java-notes li::before{
+    content:"→";
+    position:absolute;
+    left:0;
+    color:var(--blood);
+    font-weight:900;
+  }
+  .java-notes code{
+    font-family:'JetBrains Mono', monospace;
+    background:var(--shadow);
+    color:var(--parchment);
+    padding:2px 8px;
+    border-radius:2px;
+    font-size:13px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:70px;
+    padding-top:30px;
+    border-top:3px double var(--shadow);
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--shadow);
+    opacity:.7;
+  }
+
+  @media (max-width:700px){
+    .page{padding:30px 20px}
+    .compare{grid-template-columns:1fr}
+  }
+  @media print{
+    body{background:white}
+    .page::before{display:none}
+    section{page-break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">Annexe du projet · Donjons de Tamkaer</div>
+  <h1>Guide <span class="amp">de</span> survie Java</h1>
+  <p class="subtitle">De la syntaxe Python que vous maîtrisez à la syntaxe Java que vous allez apprendre — toutes les équivalences essentielles.</p>
+</header>
+
+<div class="ornament">✦ ❖ ✦</div>
+
+<section>
+  <div class="code-intro">
+    Vous connaissez déjà tous ces concepts en Python. En Java, la logique est identique, mais la syntaxe est plus stricte : tout doit être typé, chaque fichier contient une classe, et la visibilité (<em>public</em>, <em>private</em>) est un vrai mot-clé du langage. Voici les équivalents directs.
+  </div>
+
+  <h3>Une classe simple</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre><span class="kw">class</span> <span class="typ">Produit</span>:
+    <span class="kw">def</span> __init__(self, nom, prix):
+        self.nom = nom
+        self.prix = prix
+
+    <span class="kw">def</span> afficher(self):
+        <span class="kw">print</span>(<span class="str">f"{self.nom} : {self.prix}€"</span>)</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public class</span> <span class="typ">Produit</span> {
+    <span class="kw">private</span> <span class="typ">String</span> nom;
+    <span class="kw">private</span> <span class="typ">double</span> prix;
+
+    <span class="com">// Constructeur (remplace __init__)</span>
+    <span class="kw">public</span> <span class="typ">Produit</span>(<span class="typ">String</span> nom, <span class="typ">double</span> prix) {
+        <span class="kw">this</span>.nom = nom;
+        <span class="kw">this</span>.prix = prix;
+    }
+
+    <span class="kw">public void</span> afficher() {
+        <span class="typ">System</span>.out.println(nom + <span class="str">" : "</span> + prix + <span class="str">"€"</span>);
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="java-notes">
+    <h3>Ce qui change par rapport à Python</h3>
+    <ul>
+      <li><code>self</code> devient <code>this</code> (et est souvent optionnel)</li>
+      <li><code>__init__</code> devient un <strong>constructeur</strong> qui porte le nom exact de la classe</li>
+      <li>Chaque attribut doit être <strong>déclaré avec son type</strong> en haut de la classe : <code>private String nom;</code></li>
+      <li><code>private</code> est un vrai mot-clé (pas une convention avec <code>_</code>)</li>
+      <li>Chaque instruction se termine par un <strong>point-virgule <code>;</code></strong></li>
+      <li>Les accolades <code>{ }</code> remplacent l'indentation</li>
+      <li><code>print()</code> devient <code>System.out.println()</code></li>
+    </ul>
+  </div>
+
+  <h3>Une méthode qui retourne une valeur</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre><span class="kw">def</span> calculer_ttc(self):
+    <span class="kw">return</span> self.prix * <span class="num">1.20</span></pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public</span> <span class="typ">double</span> calculerTTC() {
+    <span class="kw">return</span> prix * <span class="num">1.20</span>;
+}</pre>
+    </div>
+  </div>
+  <div class="java-notes">
+    <ul>
+      <li>En Java il faut indiquer <strong>le type de retour</strong> avant le nom : <code>double</code>, <code>String</code>, <code>boolean</code>, <code>int</code>…</li>
+      <li>Si la méthode ne retourne rien, utilisez le type spécial <code>void</code></li>
+      <li>Convention de nommage : <strong>camelCase</strong> (<code>calculerTTC</code>) et non <strong>snake_case</strong></li>
+    </ul>
+  </div>
+
+  <h3>Les getters et setters</h3>
+  <div class="code-intro" style="margin-bottom:18px">
+    Java n'a pas de <code>@property</code>. On écrit explicitement des méthodes <code>getNom()</code> et <code>setNom(...)</code>. C'est plus verbeux mais c'est la norme absolue dans tout code Java professionnel.
+  </div>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python (avec @property)</div>
+<pre>@<span class="kw">property</span>
+<span class="kw">def</span> prix(self):
+    <span class="kw">return</span> self._prix
+
+@prix.setter
+<span class="kw">def</span> prix(self, valeur):
+    <span class="kw">if</span> valeur &lt; <span class="num">0</span>:
+        <span class="kw">raise</span> <span class="typ">ValueError</span>(<span class="str">"Prix invalide"</span>)
+    self._prix = valeur</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public</span> <span class="typ">double</span> getPrix() {
+    <span class="kw">return</span> prix;
+}
+
+<span class="kw">public void</span> setPrix(<span class="typ">double</span> valeur) {
+    <span class="kw">if</span> (valeur &lt; <span class="num">0</span>) {
+        <span class="kw">throw new</span> <span class="typ">IllegalArgumentException</span>(<span class="str">"Prix invalide"</span>);
+    }
+    <span class="kw">this</span>.prix = valeur;
+}</pre>
+    </div>
+  </div>
+
+  <h3>L'héritage</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre><span class="kw">class</span> <span class="typ">Ennemi</span>(<span class="typ">Personnage</span>):
+    <span class="kw">def</span> __init__(self, nom, pv, xp):
+        <span class="kw">super</span>().__init__(nom, pv)
+        self.xp = xp</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public class</span> <span class="typ">Ennemi</span> <span class="kw">extends</span> <span class="typ">Personnage</span> {
+    <span class="kw">private int</span> xp;
+
+    <span class="kw">public</span> <span class="typ">Ennemi</span>(<span class="typ">String</span> nom, <span class="typ">int</span> pv, <span class="typ">int</span> xp) {
+        <span class="kw">super</span>(nom, pv);
+        <span class="kw">this</span>.xp = xp;
+    }
+}</pre>
+    </div>
+  </div>
+  <div class="java-notes">
+    <ul>
+      <li><code>(Parent)</code> devient <code>extends Parent</code></li>
+      <li><code>super().__init__(...)</code> devient simplement <code>super(...)</code> et <strong>doit être la première ligne</strong> du constructeur</li>
+    </ul>
+  </div>
+
+  <h3>Classes abstraites et méthodes abstraites</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="typ">Personnage</span>(<span class="typ">ABC</span>):
+    @abstractmethod
+    <span class="kw">def</span> attaquer(self):
+        <span class="kw">pass</span></pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public abstract class</span> <span class="typ">Personnage</span> {
+    <span class="kw">public abstract void</span> attaquer();
+}</pre>
+    </div>
+  </div>
+
+  <h3>Les interfaces (pattern que Python n'a pas vraiment)</h3>
+  <div class="code-intro" style="margin-bottom:18px">
+    Une interface en Java, c'est un contrat : une liste de méthodes qu'une classe s'engage à implémenter. Très utile pour votre interface <code>Objet</code> (arme, armure, potion) ou pour le pattern Observer.
+  </div>
+  <div class="code-block" style="margin-bottom:20px">
+    <div class="label">Java — déclarer une interface</div>
+<pre><span class="kw">public interface</span> <span class="typ">Objet</span> {
+    <span class="typ">String</span> getNom();
+    <span class="typ">int</span> getValeur();
+    <span class="kw">void</span> utiliser(<span class="typ">Heros</span> heros);
+}</pre>
+  </div>
+  <div class="code-block">
+    <div class="label">Java — implémenter une interface</div>
+<pre><span class="kw">public class</span> <span class="typ">Potion</span> <span class="kw">implements</span> <span class="typ">Objet</span> {
+    <span class="kw">private</span> <span class="typ">String</span> nom;
+    <span class="kw">private int</span> valeur;
+
+    @Override
+    <span class="kw">public</span> <span class="typ">String</span> getNom() { <span class="kw">return</span> nom; }
+
+    @Override
+    <span class="kw">public int</span> getValeur() { <span class="kw">return</span> valeur; }
+
+    @Override
+    <span class="kw">public void</span> utiliser(<span class="typ">Heros</span> heros) {
+        heros.soigner(valeur);
+    }
+}</pre>
+  </div>
+
+  <h3>Créer un objet et appeler ses méthodes</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre>clavier = <span class="typ">Produit</span>(<span class="str">"Clavier"</span>, <span class="num">49.99</span>)
+clavier.afficher()
+<span class="kw">print</span>(clavier.prix)</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="typ">Produit</span> clavier = <span class="kw">new</span> <span class="typ">Produit</span>(<span class="str">"Clavier"</span>, <span class="num">49.99</span>);
+clavier.afficher();
+<span class="typ">System</span>.out.println(clavier.getPrix());</pre>
+    </div>
+  </div>
+  <div class="java-notes">
+    <ul>
+      <li>Le mot-clé <code>new</code> est obligatoire pour créer un objet</li>
+      <li>On déclare le type de la variable à gauche : <code>Produit clavier = ...</code></li>
+      <li>Pour lire un attribut privé, on passe par son getter : <code>clavier.getPrix()</code></li>
+    </ul>
+  </div>
+
+  <h3>Les collections (équivalent des listes Python)</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre>ennemis = []
+ennemis.append(<span class="typ">Gobelin</span>())
+<span class="kw">for</span> e <span class="kw">in</span> ennemis:
+    e.attaquer()</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="typ">List</span>&lt;<span class="typ">Ennemi</span>&gt; ennemis = <span class="kw">new</span> <span class="typ">ArrayList</span>&lt;&gt;();
+ennemis.add(<span class="kw">new</span> <span class="typ">Gobelin</span>());
+<span class="kw">for</span> (<span class="typ">Ennemi</span> e : ennemis) {
+    e.attaquer();
+}</pre>
+    </div>
+  </div>
+  <div class="java-notes">
+    <ul>
+      <li><code>List&lt;Ennemi&gt;</code> signifie "une liste d'<em>Ennemi</em>" : le type entre <code>&lt; &gt;</code> est obligatoire</li>
+      <li>Il faut importer la classe en haut du fichier : <code>import java.util.ArrayList;</code> et <code>import java.util.List;</code></li>
+      <li><code>.append()</code> devient <code>.add()</code></li>
+    </ul>
+  </div>
+
+  <h3>Le point d'entrée du programme</h3>
+  <div class="compare">
+    <div class="code-block">
+      <div class="label">Python</div>
+<pre><span class="kw">if</span> __name__ == <span class="str">"__main__"</span>:
+    main()</pre>
+    </div>
+    <div class="code-block">
+      <div class="label">Java</div>
+<pre><span class="kw">public class</span> <span class="typ">Main</span> {
+    <span class="kw">public static void</span> main(<span class="typ">String</span>[] args) {
+        <span class="com">// point d'entrée du programme</span>
+        <span class="typ">Jeu</span> jeu = <span class="kw">new</span> <span class="typ">Jeu</span>();
+        jeu.lancer();
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="java-notes" style="margin-top:30px">
+    <h3>Les types primitifs à connaître</h3>
+    <ul>
+      <li><code>int</code> — nombre entier (ex : PV, niveau, or)</li>
+      <li><code>double</code> — nombre à virgule (ex : prix, probabilités)</li>
+      <li><code>boolean</code> — <code>true</code> ou <code>false</code> (minuscules, contrairement à Python)</li>
+      <li><code>String</code> — chaîne de caractères (attention, la majuscule est obligatoire)</li>
+      <li><code>char</code> — un seul caractère, entre apostrophes : <code>'A'</code></li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  Annexe — Donjons de Tamkaer
+</footer>
+
+</div>
+</body>
+</html>
